@@ -1,0 +1,102 @@
+To set value 
+  SET server:name "your_value"
+
+To get value
+  GET server:name // ouput => "your_value"
+
+To delete value
+  DEL
+
+To set key if not exist
+  SETNX
+
+
+Auto-increment value
+  INCR // It is an atomic operation. 
+  
+  Scenario
+  Client A reads count as 10.
+  Client B reads count as 10.
+  Client A increments 10 and sets count to 11.
+  Client B increments 10 and sets count to 11.
+  
+  //We wanted the value to be 12, but instead it is 11! 
+  //This is because incrementing the value in this way is not an atomic operation. 
+  //Calling the INCR command in Redis will prevent this from happening, because it is an atomic operation. 
+  //Redis provides many of these atomic operations on different types of data.
+
+
+Examples
+    SET connections 10
+    INCR connections => 11
+    INCR connections => 12
+    DEL connections
+    INCR connections => 1
+    
+Key expiration
+  Redis can be told that a key should only exist for a certain length of time. This is accomplished with the EXPIRE and TTL commands.
+
+
+    SET resource:lock "Redis Demo"
+    EXPIRE resource:lock 120
+   //This causes the key resource:lock to be deleted in 120 seconds. You can test how long a key will exist with the TTL command. It returns the number of seconds until it will be deleted.
+
+
+    TTL resource:lock => 113
+    // after 113s
+    TTL resource:lock => -2
+    //The -2 for the TTL of the key means that the key does not exist (anymore). A -1 for the TTL of the key means that it will never expire. Note that if you SET a key, its TTL will be reset.
+
+
+    SET resource:lock "Redis Demo 1"
+    EXPIRE resource:lock 120
+    TTL resource:lock => 119
+    SET resource:lock "Redis Demo 2"
+    TTL resource:lock => -1
+    
+    
+    LIST
+      // A list is a series of ordered values. 
+      //Some of the important commands for interacting with lists are RPUSH, LPUSH, LLEN, LRANGE, LPOP, and RPOP. 
+      //You can immediately begin working with a key as a list, as long as it doesn't already exist as a different type.
+      
+      
+      RPUSH puts the new value at the end of the list.
+
+
+    RPUSH friends "Alice"
+    RPUSH friends "Bob"
+   //LPUSH puts the new value at the start of the list.
+
+
+    LPUSH friends "Sam"
+  //LRANGE gives a subset of the list. It takes the index of the first element you want to retrieve as 
+  //its first parameter and the index of the last element you want to retrieve as its second parameter.
+  //A value of -1 for the second parameter means to retrieve elements until the end of the list.
+
+
+    LRANGE friends 0 -1 => 1) "Sam", 2) "Alice", 3) "Bob"
+    LRANGE friends 0 1 => 1) "Sam", 2) "Alice"
+    LRANGE friends 1 2 => 1) "Alice", 2) "Bob"
+      
+      
+    //LLEN returns the current length of the list.
+
+
+    LLEN friends => 3
+    //LPOP removes the first element from the list and returns it.
+
+
+    LPOP friends => "Sam"
+    //RPOP removes the last element from the list and returns it.
+
+
+    RPOP friends => "Bob"
+    //Note that the list now only has one element:
+
+
+    LLEN friends => 1
+    LRANGE friends 0 -1 => 1) "Alice"
+    
+    
+    
